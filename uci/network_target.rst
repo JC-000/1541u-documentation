@@ -176,9 +176,11 @@ NET_CMD_GET_RANDOM (0x20)
 
 Command format: ``$03 $20 <LEN_LSB> <LEN_MSB>``
 
-Availability: Ultimate 64 and Ultimate 64 Elite, with WiFi module
-firmware V1.7 or later (“ESP32 WiFi Bridge V1.7”). Every other product
-answers ``87,NO ENTROPY SOURCE`` to a valid request.
+Availability: with WiFi enabled, the Ultimate 64 and Ultimate 64 Elite
+with WiFi module firmware V1.7 or later (“ESP32 WiFi Bridge V1.7”), and
+the Ultimate 64 Elite II and C64 Ultimate with WiFi module firmware
+V1.15 or later (“ESP32 WiFi Bridge V1.15”). Every other product answers
+``87,NO ENTROPY SOURCE`` to a valid request.
 
 Description: Returns hardware random bytes, for example for keys or
 nonces. The bytes come from the hardware random number generator of the
@@ -198,9 +200,12 @@ The status response could be:
 - ``86,INTERNAL ERROR``: the WiFi module sent a malformed answer.
 - ``87,NO ENTROPY SOURCE``: no hardware random bytes are available. The
   Ultimate's WiFi application is not running (for instance, WiFi is
-  set to “Disabled”), the WiFi module has no entropy source or runs
-  module firmware older than V1.7, or the product is not an Ultimate 64
-  or Ultimate 64 Elite.
+  set to “Disabled” on an Ultimate 64 or Ultimate 64 Elite), WiFi is set
+  to “Disabled” on an Ultimate 64 Elite II or C64 Ultimate (its module
+  then stops its radio), the WiFi module has no entropy source or runs
+  module firmware older than V1.7 (Ultimate 64, Ultimate 64 Elite) or
+  V1.15 (Ultimate 64 Elite II, C64 Ultimate), or the product is not one
+  of these four.
 - ``88,ENTROPY SOURCE BUSY``: the WiFi module did not answer in time, or
   another request was in progress. The request can be retried. The
   module is given 200 ms to answer, which starts after the request has
@@ -210,11 +215,12 @@ The status response could be:
 Status codes 87 and 88 have a different meaning in the other targets.
 
 The ESP32 generator only produces true random numbers while its radio
-is running. The WiFi module firmware starts its radio before it accepts
-any request and does not stop it while it runs, and it refuses the
-request when it has no entropy source. The Ultimate 64 Elite-II and the
-Commodore 64 Ultimate run other WiFi module firmware, which stops its
-radio when WiFi is disabled; on these products this command always
-answers ``87,NO ENTROPY SOURCE``.
+is running. The WiFi module firmware of the Ultimate 64 and Ultimate 64
+Elite starts its radio before it accepts any request and does not stop
+it while it runs. The WiFi module firmware of the Ultimate 64 Elite II
+and the C64 Ultimate stops its radio when WiFi is disabled in the menu;
+while it is stopped, and for a request during which it was stopped,
+this command answers ``87,NO ENTROPY SOURCE``. Every module refuses the
+request when it has no entropy source.
 
 Firmware versions without this command answer ``21,UNKNOWN COMMAND``.
