@@ -172,12 +172,13 @@ Status: ``00,OK``, or one of:
 - ``84,UNRESOLVED HOST`` if DNS lookup fails
 - ``85,ERROR OPENING SOCKET`` if no socket is available
 - ``89,PORT IN USE`` if the local port is already in use
+- ``86,INTERNAL ERROR`` if the bound port cannot be read back
 - ``11,ERROR ON CONNECT: <errno>``
 
 Status 89 means something else in other targets. The numbering of status
 codes is per target.
 
-The socket is connected to the remote host and port, like a socket from
+The socket is filtered to the remote host and port, like a socket from
 OPEN_UDP: it only receives datagrams that come from that address and
 port. It is read, written and closed with the same commands as any other
 socket.
@@ -187,8 +188,7 @@ program or by the Ultimate itself, for example the ident service on UDP
 port 64 or the DHCP client on UDP port 68. TCP sockets do not use UDP
 ports, so they never conflict. The port stays in use until the socket is
 closed, and it can be opened again as soon as CLOSE_SOCKET returns. A C64
-reset closes the socket and frees the port. A program that holds a fixed
-port can be recognized from the network by it.
+reset closes the socket and frees the port.
 
 To find out whether the firmware has this command, send it with a remote
 port of 0 and any host. Firmware that has it answers
