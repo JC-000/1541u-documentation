@@ -146,13 +146,9 @@ NET_CMD_OPEN_UDP_LOCAL (0x0A)
 Command format: ``$03 $0A <REMOTE_PORT_LSB> <REMOTE_PORT_MSB> <LOCAL_PORT_LSB> <LOCAL_PORT_MSB> <HOSTNAME/IP_STRING>``
 
 Opens a UDP socket like OPEN_UDP, but from a local port of your choice.
-Open commands that take a local port put the remote port at bytes 2-3
-and the local port at bytes 4-5, then the host. A local port of 0 means
-any free port, and the reply carries the handle followed by the bound
-local port.
 
-Parameters: Both ports are 16-bit values (Little-Endian). The remote port
-must not be 0. The host is a hostname or a dotted IPv4 address of 1 to 253
+Parameters: Both ports are 16-bit values (Little-Endian). A local port of
+0 means any free port. The remote port must not be 0. The host is a hostname or a dotted IPv4 address of 1 to 253
 characters, optionally followed by one ``$00``; nothing may follow the
 ``$00``. The command cannot be sent with the no-reply flag set, because a
 program that does not see the reply cannot close the socket, and the port
@@ -185,13 +181,14 @@ socket.
 
 The port is in use if another UDP socket holds it, whether opened by your
 program or by the Ultimate itself, for example the ident service on UDP
-port 64 or the DHCP client on UDP port 68. TCP sockets do not use UDP
+port 64 while it is enabled, or the DHCP client on UDP port 68 while the
+Ultimate uses DHCP. TCP sockets do not use UDP
 ports, so they never conflict. The port stays in use until the socket is
 closed, and it can be opened again as soon as CLOSE_SOCKET returns. A C64
 reset closes the socket and frees the port.
 
 To find out whether the firmware has this command, send it with a remote
-port of 0 and any host. Firmware that has it answers
+port of 0 and a host of at least one character. Firmware that has it answers
 ``82,PARAMETER(S) OUT OF RANGE`` and opens nothing; firmware that does not
 answers ``21,UNKNOWN COMMAND``.
 
