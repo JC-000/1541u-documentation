@@ -179,6 +179,20 @@ OPEN_UDP: it only receives datagrams that come from that address and
 port. It is read, written and closed with the same commands as any other
 socket.
 
+The one exception is a remote host of ``0.0.0.0``. The socket then accepts
+datagrams from any sender whose source port equals the remote port; datagrams
+from other source ports are dropped. Use such a socket only to receive. A
+WRITE on it goes out as a link-layer broadcast to ``0.0.0.0``. To send, use a
+socket opened to the subnet broadcast address or to the peer. This describes
+how the firmware behaves today.
+
+Sending to the subnet broadcast address needs no socket option, because
+lwIP's broadcast filters (``IP_SOF_BROADCAST`` and
+``IP_SOF_BROADCAST_RECV``) are off, which is lwIP's default. A broadcast
+is received like any other datagram: it passes the filter above, so a
+socket opened to the subnet broadcast address does not receive it, and a
+socket opened to ``0.0.0.0`` with the sender's port does.
+
 The port is in use if another UDP socket holds it, whether opened by your
 program or by the Ultimate itself, for example the ident service on UDP
 port 64 while it is enabled, or the DHCP client on UDP port 68 while the
